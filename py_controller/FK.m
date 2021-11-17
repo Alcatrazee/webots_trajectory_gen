@@ -25,7 +25,7 @@ for i = 1:6
    T_mat(:,:,i) = T_matrix(eps_vec(:,i),theta_vec(i));
    T_all = T_all*T_mat(:,:,i);
 end
-time_analitic = toc
+time_analitic = toc;
 
 g_st = T_all*g_st0;
 

@@ -1,8 +1,7 @@
 clear all 
 close all
 % theta_vec = [pi/2 deg2rad(0) -pi/2 0 pi/2 0];
-% theta_vec = -pi + (pi+pi).*rand([1 6]);
-theta_vec = deg2rad([-6,-50,-12,82,45,36]);
+theta_vec = deg2rad([0,-90,67,90,68,65]);
 
 gst_0 = [0,0,1,81.4+418.6+490
     0,1,0,0
