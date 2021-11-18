@@ -4,13 +4,15 @@ import time
 import numpy as np
 from minmun_snap import trajectory_generation
 from FK_solver import FK_solver
+import math
 
 class kr6_900(Robot):
     def init(self):
 
         self.TIME_STEP= int(Supervisor.getBasicTimeStep(self))
-        initial_position = [1.57,-1.57,1.57,0,1.57,0]
-        initial_position = [0,0,0,0,0,0]
+        initial_position = [-106.930000,-125.420000,-88.800000,87.410000,-69.910000,114.640000]
+        for i in range(len(initial_position)):
+            initial_position[i] = math.radians(initial_position[i])
         self.angle_sensor = []
         self.motors = []
         name_sensor = []
@@ -45,14 +47,14 @@ class kr6_900(Robot):
                         [0,1,0],
                         [-1,0,0]]).T
         q_mat = np.array([[0,0,400],
-                        [0,0,400],
-                        [490,0,400],
-                        [786,0,400],
-                        [786,0 ,400],
-                        [786, 0, 400]]).T
-        gst_0 = np.array([[0,0,1,81.4+386+490],
+                        [25,0,400],
+                        [480,0,400],
+                        [900,0,435],
+                        [900,0 ,435],
+                        [900, 0, 435]]).T
+        gst_0 = np.array([[0,0,1,80+420+480],
                         [0,1,0,0],
-                        [-1,0,0,400],
+                        [-1,0,0,435],
                         [0,0,0,1]])
         return w_mat,q_mat,gst_0
         
