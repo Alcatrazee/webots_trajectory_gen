@@ -1,4 +1,4 @@
-function g_st = FK(theta_vec,w_vec,q_vec,g_st0,color)
+function [g_st,T_mat] = FK(theta_vec,w_vec,q_vec,g_st0)
 %input theta_vec
 
 eps_vec = [zeros(3,6);w_vec];
@@ -27,4 +27,3 @@ time_analitic = toc;
 g_st = T_all*g_st0;
 
 
-display_skeleton(q_vec,T_mat,g_st0,g_st,color)
