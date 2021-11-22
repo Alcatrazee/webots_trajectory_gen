@@ -2,7 +2,8 @@
 clear all 
 close all
 %% parameters setting.
-theta_vec = deg2rad([-31.040000, -38.880000, -88.800000, 71.310000, -81.040000, 187.680000]);
+% theta_vec = deg2rad([88.200000, -132.080000, 126.400000, -29.490000, 58.090000, -185.650000]);
+theta_vec = deg2rad(load('angles.xml'));
 
 gst_0 = [0,0,1,980
     0,1,0,0
@@ -41,3 +42,5 @@ figure()
 display_skeleton(q_vec,T_mat,gst_0,g_st,'b')
 display_skeleton(q_vec,T_FK(:,:,:,5),gst_0,g_st,'r')
 
+py_result = load('output_py.txt');
+theta_vector_IK - py_result
