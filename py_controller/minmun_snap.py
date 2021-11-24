@@ -18,8 +18,6 @@ def get_derivative(poly_order,derivative_order,t):
 
 def trajectory_generation(initial_state,end_state,T,steps):
     poly_n = 7
-
-
     b = np.concatenate((initial_state,end_state),axis=0).T
 
     A = np.zeros((8,poly_n+1))
@@ -29,7 +27,7 @@ def trajectory_generation(initial_state,end_state,T,steps):
     A[3][4] = 1
 
     A[4:][:] = get_derivative(poly_n,3,T)
-
+    
     x = np.dot(np.linalg.pinv(A),b)
     t_series = np.linspace(0,T,steps)
 

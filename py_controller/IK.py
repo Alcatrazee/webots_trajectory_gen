@@ -54,7 +54,7 @@ class IK_solver():
         theta_vector[7,1:3] = theta_23_t1[1,:]
 
         # theta 4 5 6 computation
-        eps = 2.2204e-16
+        eps = 2.2204e-6
         pi = np.pi
         for i in range(0,7,2):
             # get R4*R5*R6
@@ -171,6 +171,12 @@ def main():
         vec_array = np.deg2rad(list(map(float,file.readline().split(','))))   
     # vec_array = np.deg2rad([-31.040000, -38.880000, -88.800000, 71.310000, -81.040000, 187.680000])
     gst = fk.compute_fk(theta_vec=vec_array)
+
+    gst = [    [-0.407247,     0.223049,    -0.885663,   -63.973226 ],
+     [-0.901412,    -0.254226,     0.350464,   -49.049778 ],
+    [ -0.146988,     0.941073,     0.304592,  1038.441005 ],
+     [ 0.000000,     0.000000,     0.000000,     1.000000 ]]
+
     print(gst)
     ik = IK_solver()
     time_start = time.time()
