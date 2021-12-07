@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from scipy.linalg import expm
-import time
+import time,numba
 
 class FK_solver:
     def __init__(self,w_mat,q_mat,gst_0):
@@ -12,21 +12,17 @@ class FK_solver:
         self.eps_vec[3:][:] = self.w
         
         self.compute_v()
-        
+    
+    
     def compute_fk(self,theta_vec):
         T = np.zeros([6,4,4])
         T_all = np.eye(4)
-
-        # time_start = time.time()
         for i in range(6):
             T[i,:,:] = T_matrix(self.eps_vec[:,i],theta_vec[i])
             T_all = np.dot(T_all,T[i,:,:])
-        # print('analitycal')
-        # print(time.time() - time_start)
-
         gst = np.dot(T_all,self.gst_0)
 
-        return gst
+        return gst,T
 
     def compute_v(self):
         for i in range(6):
@@ -36,7 +32,6 @@ def R_matrix(w,theta):
     return np.eye(3) + hat(w)*math.sin(theta) + np.dot(hat(w),hat(w))*(1-math.cos(theta))
 
 def T_matrix(eps,theta):
-    
     result = np.eye(4)
     w = eps[3:]
     v = eps[0:3]
@@ -46,7 +41,6 @@ def T_matrix(eps,theta):
     P_part = np.dot(np.dot((np.eye(3) - R_part),hat(w)),v)+np.dot(mat_w_T*mat_w,v)*theta
     result[0:3,0:3] = R_part
     result[0:3,3] = P_part
-    
     return result 
 
 def hat(vector):
