@@ -23,7 +23,7 @@ class IK_solver():
         # prepare output
         theta_vector = np.zeros([1,6])
         theta_vector,succ = self.inverse_k(gst,initial_guess)
-        return theta_vector
+        return theta_vector,succ
 
     #function: inverse_kinematic
     #input: a homogenous represantation posture of a robot end_effector
@@ -35,7 +35,7 @@ class IK_solver():
         limit_of_iterate = 100
         # initial state vector(just 6 angles)
         theta_vector = initial_guess
-
+        succeeded = 0
         # apply Newton's method
         for i in range(limit_of_iterate):
             # time_start = time.time()
@@ -80,10 +80,24 @@ class IK_solver():
         # print('norm of phi:'+str(Norm_of_phi))
         if succeeded==1:
             # print('inverse result:'+str(theta_vector))
+            theta_vector = self.limit_angles(theta_vector,self.angle_limits)
             return theta_vector,succeeded
         else:
             print('cannot solve the equation,maybe the posture is out of range.')
             return np.matrix([[0,0,0,0,0,0]]),succeeded
+
+    def limit_angles(self,theta_vec,angle_limits):
+        for i in range(theta_vec.size):
+            if theta_vec[i]<angle_limits[i,0]:
+                theta_vec[i] = theta_vec[i] + np.round(np.abs(theta_vec[i])/(2*np.pi))*(2*np.pi)
+                if theta_vec[i]<angle_limits[i,0]:
+                    theta_vec[i] = theta_vec[i] + np.pi
+            elif theta_vec[i]>angle_limits[i,1]:
+                theta_vec[i] = theta_vec[i] - np.round(np.abs(theta_vec[i])/(2*np.pi))*(2*np.pi)
+                if theta_vec[i]>angle_limits[i,1]:
+                    theta_vec[i] = theta_vec[i] - np.pi
+        return theta_vec
+
 
     # epsilo coordinate
     def make_epsilo(self):

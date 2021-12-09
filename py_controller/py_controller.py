@@ -6,6 +6,7 @@ from minmun_snap import trajectory_generation
 from FK_solver import FK_solver
 import math
 from IK import IK_solver
+import IK_numerical
 import operator
 
 class kr6_900(Robot):
@@ -13,9 +14,8 @@ class kr6_900(Robot):
     def init(self):
         self.states_dict = {'idle':1,'jogging':2,'motion':3,'pause':4}
         max_min_angles_deg = np.array([[-170,170],[-190,45],[-120,156],[-185,185],[-120,120],[-350,350]])
-        self.max_min_angles = np.deg2rad(max_min_angles_deg)
+        self.max_min_angles = np.deg2rad(max_min_angles_deg)    
         self.steps_per_sec = 100
-        
         self.valid_pos = False
 
         self.state = self.states_dict['idle']
@@ -39,6 +39,7 @@ class kr6_900(Robot):
                     [0.000000,     0.000000,     0.000000,     1.000000] ]
 
         self.gst_list = [self.gst2,self.gst1,self.gst0]
+        # self.gst_list = [self.gst2]   
 
         self.gst = []
 
@@ -70,6 +71,8 @@ class kr6_900(Robot):
         #     self.motors[i].setPosition(home_position[i])
         w_mat,q_mat,self.gst_0,self.gst_0_0 = self.get_param()
         self.fk = FK_solver(w_mat,q_mat,self.gst_0)
+        self.ik_solver_numerical = IK_numerical.IK_solver()
+        self.ik_solver_numerical.init(gst_0=self.gst_0,w_vec=w_mat,q_vec=q_mat,angle_limits=self.max_min_angles)
 
         self.state = self.states_dict['idle']
         
@@ -129,7 +132,7 @@ class kr6_900(Robot):
                 self.valid_pos = True
                 # print(self.joint_angle)
             if self.valid_pos == True:
-                self.posture = self.fk.compute_fk(np.array(self.joint_angle))
+                self.posture,T = self.fk.compute_fk(np.array(self.joint_angle))
             if timer==100:
                 # print(self.posture)
                 timer = 0
@@ -139,6 +142,7 @@ class kr6_900(Robot):
 
     def control_joint_angle(self):
         self.ik_solver = IK_solver()
+        
         print('control threading in')
         
         while(1):
@@ -156,14 +160,16 @@ class kr6_900(Robot):
             if self.planned == False:
                 self.T = 4
                 time_start = time.time()
+                initial_state = self.joint_angle
                 # step 1. ik
                 solutions = self.ik_solver.compute_IK(gst=self.gst,gst_0=self.gst_0,gst_0_0=self.gst_0_0)
+                # solutions,success = self.ik_solver_numerical.compute_IK(gst = self.gst,initial_guess=np.array([0,0,0,0,0,0]))
+                # print(solutions,success)
                 # step 2. find optimal solution
-                # print(solutions)
-                initial_state = self.joint_angle
-
-                self.des_joint_angle = self.get_optimal_solution(solutions,initial_state)
-                
+                if solutions.shape[0]>6:
+                    self.des_joint_angle = self.get_optimal_solution(solutions,initial_state)
+                else:
+                    self.des_joint_angle = solutions
                 # step 3. trajectory planning
                 end_state = self.des_joint_angle
                 self.sum_steps = self.T*self.steps_per_sec
