@@ -67,46 +67,56 @@ class IK_solver():
             # decouple R4*R5*R6, 2 solutions
             # step 1. compute theta5,2 solutions
             theta5_1 = math.acos(R_4_6[0,0])
-            if(abs(math.cos(theta5_1)-R_4_6[0,0])>eps):
-                theta5_1 = -theta5_1
-            
-            # step 2. compute theta4, 2 solutions, but it needs to valify the
-            # result rotation matrix is in the correct sign amount the origin
-            # matrix
-            theta4_1 = math.atan2(-R_4_6[1,0],-R_4_6[2,0])
-            while(abs(-math.sin(theta5_1)*math.sin(theta4_1)-R_4_6[1,0])>10*eps or np.abs(-math.sin(theta5_1)*math.cos(theta4_1)-R_4_6[2,0])>10*eps):
-                if theta4_1>=0:
-                    theta4_1 = theta4_1-pi
-                else:
-                    theta4_1 = pi+theta4_1
+            if abs(theta5_1)>eps:
+                if(abs(math.cos(theta5_1)-R_4_6[0,0])>eps):
+                    theta5_1 = -theta5_1
                 
-            
-            # step 3. compute theta6, 2 solutions, just like theta4, solution needs
-            # to validate(compare with origin matrix)
-            theta6_1 = math.atan2(-R_4_6[0,1],R_4_6[0,2])
-            while(abs(math.sin(theta5_1)*math.cos(theta6_1)-R_4_6[0,2])>10*eps or abs(-math.sin(theta5_1)*math.sin(theta6_1)-R_4_6[0,1])>10*eps):
-                if theta6_1>=0:
-                    theta6_1 = theta6_1-pi
-                else:
-                    theta6_1 = pi+theta6_1
+                # step 2. compute theta4, 2 solutions, but it needs to valify the
+                # result rotation matrix is in the correct sign amount the origin
+                # matrix
+                theta4_1 = math.atan2(-R_4_6[1,0],-R_4_6[2,0])
+                while(abs(-math.sin(theta5_1)*math.sin(theta4_1)-R_4_6[1,0])>10*eps or np.abs(-math.sin(theta5_1)*math.cos(theta4_1)-R_4_6[2,0])>10*eps):
+                    if theta4_1>=0:
+                        theta4_1 = theta4_1-pi
+                    else:
+                        theta4_1 = pi+theta4_1
+                    
+                
+                # step 3. compute theta6, 2 solutions, just like theta4, solution needs
+                # to validate(compare with origin matrix)
+                theta6_1 = math.atan2(-R_4_6[0,1],R_4_6[0,2])
+                while(abs(math.sin(theta5_1)*math.cos(theta6_1)-R_4_6[0,2])>10*eps or abs(-math.sin(theta5_1)*math.sin(theta6_1)-R_4_6[0,1])>10*eps):
+                    if theta6_1>=0:
+                        theta6_1 = theta6_1-pi
+                    else:
+                        theta6_1 = pi+theta6_1
+            else:
+                theta4_1 = 0
+                t4_plus_t61 = math.asin(R_4_6[1,2])
+                theta6_1 = t4_plus_t61 - theta4_1
                 
             # step 4. compute solution 2 of each joint
             theta5_2 = -theta5_1
-            theta4_2 = math.atan2(-R_4_6[1,0],-R_4_6[2,0])
+            if(abs(theta5_2)>eps):
+                theta4_2 = math.atan2(-R_4_6[1,0],-R_4_6[2,0])
 
-            while(abs(-math.sin(theta5_2)*math.sin(theta4_2)-R_4_6[1,0])>10*eps or abs(-math.sin(theta5_2)*math.cos(theta4_2)-R_4_6[2,0])>10*eps):
-                if theta4_2>=0:
-                    theta4_2 = theta4_2-pi
-                else:
-                    theta4_2 = pi+theta4_2
-                
+                while(abs(-math.sin(theta5_2)*math.sin(theta4_2)-R_4_6[1,0])>10*eps or abs(-math.sin(theta5_2)*math.cos(theta4_2)-R_4_6[2,0])>10*eps):
+                    if theta4_2>=0:
+                        theta4_2 = theta4_2-pi
+                    else:
+                        theta4_2 = pi+theta4_2
+                    
 
-            theta6_2 = math.atan2(-R_4_6[0,1],R_4_6[0,2])
-            while(abs(math.sin(theta5_2)*math.cos(theta6_2)-R_4_6[0,2])>10*eps or abs(-math.sin(theta5_2)*math.sin(theta6_2)-R_4_6[0,1])>10*eps):
-                if theta6_2>=0:
-                    theta6_2 = theta6_2-pi
-                else:
-                    theta6_2 = pi+theta6_2
+                theta6_2 = math.atan2(-R_4_6[0,1],R_4_6[0,2])
+                while(abs(math.sin(theta5_2)*math.cos(theta6_2)-R_4_6[0,2])>10*eps or abs(-math.sin(theta5_2)*math.sin(theta6_2)-R_4_6[0,1])>10*eps):
+                    if theta6_2>=0:
+                        theta6_2 = theta6_2-pi
+                    else:
+                        theta6_2 = pi+theta6_2
+            else:
+                theta4_2 = 0
+                t4_plus_t62 = math.asin(R_4_6[1,2])
+                theta6_2 = t4_plus_t62 - theta4_2
                 
             theta_vector[i:i+2,3:6] = np.array([[theta4_1,theta5_1,theta6_1],[theta4_2,theta5_2,theta6_2]])
             #     # this code is to validate the result and origin matrix

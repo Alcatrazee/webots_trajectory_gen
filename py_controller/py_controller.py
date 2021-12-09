@@ -168,6 +168,7 @@ class kr6_900(Robot):
                 # step 2. find optimal solution
                 if solutions.shape[0]>6:
                     self.des_joint_angle = self.get_optimal_solution(solutions,initial_state)
+                    # self.des_joint_angle = solutions[1,:]
                 else:
                     self.des_joint_angle = solutions
                 # step 3. trajectory planning
